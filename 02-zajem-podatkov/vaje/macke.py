@@ -1,6 +1,6 @@
 import csv
 import os
-import requests
+import pip._vendor.requests
 import re
 
 ###############################################################################
@@ -8,11 +8,11 @@ import re
 ###############################################################################
 
 # definiratje URL glavne strani bolhe za oglase z mačkami
-cats_frontpage_url = 'http://www.bolha.com/zivali/male-zivali/macke/'
+cats_frontpage_url= 'https://www.uefa.com/uefachampionsleague/history/seasons/2017/matches/'
 # mapa, v katero bomo shranili podatke
-cat_directory = 'zajeti_podatki'
+cat_directory = 'zajeti_podatkiUCL'
 # ime datoteke v katero bomo shranili glavno stran
-frontpage_filename = 'index.html'
+frontpage_filename = 'index.htmlUCL'
 # ime CSV datoteke v katero bomo shranili podatke
 csv_filename = 'TODO'
 
@@ -23,7 +23,7 @@ def download_url_to_string(url):
     """
     try:
         # del kode, ki morda sproži napako
-        page_content = requests.get(url)
+        page_content = requests.get(cats_frontpage_url)
     except requests.exceptions.ConnectionError as e:
         # koda, ki se izvede pri napaki
         # dovolj je če izpišemo opozorilo in prekinemo izvajanje funkcije
@@ -32,8 +32,7 @@ def download_url_to_string(url):
     #status kode pove, kaki je bil odgovor
     if page_content.status_code == requests.codes.ok:
         return page_content.text
-    print('imas tezave bumbek')
-    return None
+        print('imas tezave bumbek')
     # nadaljujemo s kodo če ni prišlo do napake
     raise NotImplementedError()
 
