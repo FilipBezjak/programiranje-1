@@ -8,7 +8,11 @@ import requests
 ###############################################################################
 
 # definirajte URL glavne strani bolhe za oglase z mačkami
+<<<<<<< HEAD
 cats_frontpage_url = 'https://www.uefa.com/uefachampionsleague/history/seasons/2019/matches/'
+=======
+cats_frontpage_url = 'http://www.bolha.com/zivali/male-zivali/macke/'
+>>>>>>> ab33ecdc6a13499689a83bbba238c675478c5c14
 # mapa, v katero bomo shranili podatke
 # ce bi zeleli spravit v mapo vaje zapises  '\\02-zajem-podatkov\\vaje\\macke-podatki'
 cat_directory = 'zajeti_podatki'
@@ -71,10 +75,15 @@ def save_frontpage(page, directory, filename):
 
 
 def read_file_to_string(directory, filename):
+<<<<<<< HEAD
     """Funkcija vrne celotno vsebino datoteke "directory"/"filename" kot niz"""
     
     with open(os.path.join(directory, filename), encoding='utf-8') as f:
         return f.read()
+=======
+    """Funkcija vrne celotno vsebino datoteke "directory"/"filename" kot niz."""
+    raise NotImplementedError()
+>>>>>>> ab33ecdc6a13499689a83bbba238c675478c5c14
 
 
 # Definirajte funkcijo, ki sprejme niz, ki predstavlja vsebino spletne strani,
@@ -85,11 +94,16 @@ def read_file_to_string(directory, filename):
 
 def page_to_ads(page_content):
     """Funkcija poišče posamezne oglase, ki se nahajajo v spletni strani in
+<<<<<<< HEAD
     vrne njih seznam"""
     # pika new page ne zajema zato moras dat re.compile
     pattern = re.compile('<li class="EntityList-item EntityList-item--Regular(.*?)</article>', re.DOTALL)
 
     return re.findall(pattern, page_content)
+=======
+    vrne seznam oglasov."""
+    raise NotImplementedError()
+>>>>>>> ab33ecdc6a13499689a83bbba238c675478c5c14
 
 
 # Definirajte funkcijo, ki sprejme niz, ki predstavlja oglas, in izlušči
@@ -98,6 +112,7 @@ def page_to_ads(page_content):
 
 def get_dict_from_ad_block(block):
     """Funkcija iz niza za posamezen oglasni blok izlušči podatke o imenu, ceni
+<<<<<<< HEAD
     in opisu ter vrne slovar, ki vsebuje ustrezne podatke
     """
     # lahko bi uporabili compile
@@ -105,6 +120,10 @@ def get_dict_from_ad_block(block):
     pattern = r'alt="(?P<naslov_oglasa>(.*?))"' # .groupdict
     result = re.search(pattern, block, re.DOTALL)
     return result.groupdict()
+=======
+    in opisu ter vrne slovar, ki vsebuje ustrezne podatke."""
+    raise NotImplementedError()
+>>>>>>> ab33ecdc6a13499689a83bbba238c675478c5c14
 
 
 # Definirajte funkcijo, ki sprejme ime in lokacijo datoteke, ki vsebuje
@@ -173,10 +192,14 @@ def main(redownload=True, reparse=True):
     # Iz lokalne (html) datoteke preberemo podatke
     print(ads_from_file(frontpage_filename, cat_directory))
 
+<<<<<<< HEAD
     html_data = read_file_to_string(cat_directory, frontpage_filename)
     ads = page_to_ads(html_data)
     
     # Podatke prebermo v lepšo obliko (seznam slovarjev)
+=======
+    # Podatke preberemo v lepšo obliko (seznam slovarjev)
+>>>>>>> ab33ecdc6a13499689a83bbba238c675478c5c14
 
     # Podatke shranimo v csv datoteko
 
