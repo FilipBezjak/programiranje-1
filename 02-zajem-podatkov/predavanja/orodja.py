@@ -51,3 +51,4 @@ def zapisi_json(objekt, ime_datoteke):
     pripravi_imenik(ime_datoteke)
     with open(ime_datoteke, 'w', encoding='utf-8') as json_datoteka:
         json.dump(objekt, json_datoteka, indent=4, ensure_ascii=False)
+

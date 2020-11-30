@@ -1,5 +1,5 @@
 (* type barva = string *)
-
+(*
 type barva =
   | Rdeca
   | Zelena
@@ -33,6 +33,7 @@ let koliko_let_je_minilo (Leto x) = 2019 - x
 type cevelj = Cevelj of float
 type meter = Meter of float
 
+
 let razdalja_do_marsa = Meter 10000.
 let hitrost_plovila_na_sekundo = Cevelj 1.
 
@@ -50,7 +51,7 @@ let glava sez =
   | [] -> None
 
 let velika_glava xs = glava xs > 100
-
+*)
 let deli m n =
   if n = 0 then None else Some (m / n)
 
