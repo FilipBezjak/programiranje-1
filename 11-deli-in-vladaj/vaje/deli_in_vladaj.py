@@ -27,8 +27,20 @@
 #     [10, 2, 0, 4, 11, 15, 17, 5, 18]
 ###############################################################################
 
-
-
+def pivot(a, start, end):
+    p= a[start]
+    left = start
+    right = end
+    while left != right:
+        if a[left] < p:
+            left += 1
+        elif p< a[right]:
+            right += 1
+        else:
+            a[left], a[right] = a[right], a[left]
+            left +=1
+            right += 1
+    return left
 ###############################################################################
 # V tabeli želimo poiskati vrednost k-tega elementa po velikosti.
 #

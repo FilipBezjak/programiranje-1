@@ -5,7 +5,9 @@
  bodisi prazna, bodisi pa vsebujejo podatek in imajo dve (morda prazni)
  poddrevesi. Na tej točki ne predpostavljamo ničesar drugega o obliki dreves.
 [*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*)
-
+type 'a drevo=
+     |Prazno
+     |Vozlisce of 'a drevo * 'a * 'a drevo
 
 (*----------------------------------------------------------------------------*]
  Definirajmo si testni primer za preizkušanje funkcij v nadaljevanju. Testni
@@ -17,7 +19,12 @@
        /   / \
       0   6   11
 [*----------------------------------------------------------------------------*)
+let leaf x = Vozlisce (Prazno, x, Prazno )
 
+let testno_drevo = Vozlisce (
+     Vozlisce (leaf 0, 2, Prazno ),
+     5,
+     Vozlisce(leaf 6, 7, leaf 11))
 
 (*----------------------------------------------------------------------------*]
  Funkcija [mirror] vrne prezrcaljeno drevo. Na primeru [test_tree] torej vrne
@@ -33,6 +40,10 @@
  Node (Empty, 2, Node (Empty, 0, Empty)))
 [*----------------------------------------------------------------------------*)
 
+let rec mirror drevo=
+     match drevo with
+     |Vozlisce (levo, x, desno) -> Vozlisce (mirror desno, x, mirror levo)
+     |Prazno -> Prazno
 
 (*----------------------------------------------------------------------------*]
  Funkcija [height] vrne višino oz. globino drevesa, funkcija [size] pa število
@@ -44,6 +55,16 @@
  - : int = 6
 [*----------------------------------------------------------------------------*)
 
+let rec height drevo=
+     match drevo with
+     |Vozlisce (l,_,d) -> max (height d) (height l) + 1
+     |Prazno -> 0
+
+
+let rec size drevo=
+     match drevo with
+     |Vozlisce (levo, x, desno) -> (size levo) + (size desno) + 1
+     |Prazno -> 0
 
 (*----------------------------------------------------------------------------*]
  Funkcija [map_tree f tree] preslika drevo v novo drevo, ki vsebuje podatke
@@ -55,6 +76,13 @@
  Node (Node (Empty, true, Empty), true, Node (Empty, true, Empty)))
 [*----------------------------------------------------------------------------*)
 
+let rec map_tree f= function
+     |Vozlisce (levo, x, desno) -> Vozlisce ((map_tree f levo), 
+          f x,
+          (map_tree f desno))
+     |Prazno -> Prazno
+
+
 
 (*----------------------------------------------------------------------------*]
  Funkcija [list_of_tree] pretvori drevo v seznam. Vrstni red podatkov v seznamu
@@ -64,6 +92,10 @@
  - : int list = [0; 2; 5; 6; 7; 11]
 [*----------------------------------------------------------------------------*)
 
+let rec list_of_tree drevo =
+     match drevo with
+     |Prazno-> []
+     |Vozlisce (l,x,d) -> (list_of_tree l) @ [x] @ (list_of_tree d)
 
 (*----------------------------------------------------------------------------*]
  Funkcija [is_bst] preveri ali je drevo binarno iskalno drevo (Binary Search 
@@ -76,6 +108,12 @@
  - : bool = false
 [*----------------------------------------------------------------------------*)
 
+let is_bst tree =
+     let l = list_of_tree tree in
+     let rec is_sorted = function
+     |[] |[_] -> true
+     |x::y::rest -> (x<=y) && (is_sorted ( y::rest)) in
+     is_sorted l
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  V nadaljevanju predpostavljamo, da imajo dvojiška drevesa strukturo BST.
@@ -91,6 +129,23 @@
  - : bool = false
 [*----------------------------------------------------------------------------*)
 
+let rec insert x = function
+     |Prazno -> leaf x
+     |Vozlisce (l,y,d) -> 
+          if x < y then
+               Vozlisce (insert x l, y, d)
+          else if x > y then
+          Vozlisce (l, y, insert x d)
+          else Vozlisce (l,y,d)
+
+let rec member x = function
+     |Prazno -> false
+     |Vozlisce (l,y,d) -> 
+          if x < y then
+               member x l, y, r
+          else if x > y then
+               l, y, member x r
+          else true
 
 (*----------------------------------------------------------------------------*]
  Funkcija [member2] ne privzame, da je drevo bst.
@@ -112,6 +167,28 @@
  # pred (Node(Empty, 5, leaf 7));;
  - : int option = None
 [*----------------------------------------------------------------------------*)
+let rec minimal = function
+     |Prazno -> None
+     |Vozlisce (Prazno,x,_) -> Some x
+     |Vozlisce (l,_,_) -> minimal l
+
+
+
+let rec maksimal = function
+     |Prazno -> None
+     |Vozlisce (_,x,Prazno) -> Some x
+     |Vozlisce (_,_,d) -> maksimal d
+
+let rec succ drevo=
+     match drevo with
+     |Prazno -> None
+     |Vozlisce (_,_,d) -> minimal d
+
+
+let rec succ drevo=
+     match drevo with
+     |Prazno -> None
+     |Vozlisce (l,_,_) -> maksimal l
 
 
 (*----------------------------------------------------------------------------*]
@@ -127,6 +204,18 @@
  Node (Node (Empty, 6, Empty), 11, Empty))
 [*----------------------------------------------------------------------------*)
 
+let rec delete x=function
+     |Prazno -> Prazno
+     |Vozlisce (l,y,d) -> 
+          if x<y then 
+               delete x l
+          else if x>y then
+               delete x d
+          else 
+               let nas = succ Vozlisce (l,y,d) in
+               match None with
+                    |None -> l
+                    |Some nas -> Vozlisce (l, nas, delete nas r)
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
  SLOVARJI
@@ -139,6 +228,7 @@
  vrednosti, ga parametriziramo kot [('key, 'value) dict].
 [*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*)
 
+type ('key, 'value) dict = ('key * 'value) drevo
 
 (*----------------------------------------------------------------------------*]
  Napišite testni primer [test_dict]:
@@ -149,6 +239,7 @@
      "c":-2
 [*----------------------------------------------------------------------------*)
 
+let test_dict = Vozlisce(leaf ("a",0),(("b",1),Vozlisce(leaf ("c",-2),("d",2),Prazno)))
 
 (*----------------------------------------------------------------------------*]
  Funkcija [dict_get key dict] v slovarju poišče vrednost z ključem [key]. Ker
