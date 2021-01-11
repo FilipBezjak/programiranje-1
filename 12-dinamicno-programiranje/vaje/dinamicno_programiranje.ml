@@ -21,6 +21,16 @@ let test_matrix =
      [| 2 ; 4 ; 5 |];
      [| 7 ; 0 ; 1 |] |]
 
+let max_chesse chesse_matrix=
+  let dimx = Array.length chesse_matrix.(0) in
+  let dimy = Array.length chesse_matrix in 
+  let rec najboljsa x y=
+    let teza = chesse_matrix.(y).(x) in
+    let desno x y = if x + 1 >= dimx then 0 else najboljsa (x+1) y in
+    let dol x y = if y + 1 >= dimy then 0 else najboljsa x (y+1) in
+    teza + max (dol x y) (desno x y ) in
+  najboljsa 0 0
+
 (*----------------------------------------------------------------------------*]
  Rešujemo problem sestavljanja alternirajoče obarvanih stolpov. Imamo štiri
  različne tipe gradnikov, dva modra in dva rdeča. Modri gradniki so višin 2 in
