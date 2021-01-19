@@ -11,6 +11,63 @@ from functools import lru_cache
 # podzaporedje `[2, 3, 4, 4, 6, 7, 8, 9]`.
 # -----------------------------------------------------------------------------
 
+def najdaljse_narascajoce_podzaporedjee(l):
+    def podzaporedje(i, zadnji):
+        if i >= len(l):
+            return []
+        if l[i] >= zadnji:
+            vzamemo = [l[i]] + podzaporedje(i+1, l[i])
+            ne_vzamemo = podzaporedje(i+1, zadnji)
+            if len(vzamemo) >= len(ne_vzamemo):
+                return vzamemo
+            else:
+                return ne_vzamemo
+        else:
+            return podzaporedje(i+1, zadnji)
+    return podzaporedje(0, -10)
+
+def najdaljse_narascajoce_podzaporedje(sez):
+    
+    @lru_cache(maxsize=None)
+    def najdaljse(spodnja_meja, i):
+        # i označuje indeks trenutnega elementa
+        if i >= len(sez):
+            return []
+        elif sez[i] < spodnja_meja:
+            # Neprimeren element, preskočimo
+            return najdaljse(spodnja_meja, i + 1)
+        else:
+            # Razvejitev in agregacija glede na dolžino
+            z_prvim = [sez[i]] + najdaljse(sez[i], i + 1)
+            brez_prvega = najdaljse(spodnja_meja, i + 1)
+            if len(z_prvim) > len(brez_prvega):
+                return z_prvim
+            else:
+                return brez_prvega
+
+    return najdaljse(float("-inf"), 0)
+
+def podzaporedje(sez):
+    @lru_cache(maxsize=None)
+    def aux(zadnji, i):
+        if i >= len(sez):
+            return []
+        elif zadnji <= sez[i]:
+            vzamemo = [sez[i]] + aux(sez[i], i+1)
+            ne_vzamemo = aux(zadnji,i+1)
+            if len(vzamemo) >= len(ne_vzamemo):
+                return vzamemo
+            else: 
+                return ne_vzamemo
+        else:
+            return aux(zadnji, i+1)
+    return aux(float("-inf"),0)
+    
+            
+#print(podzaporedje([5,3,8,4,2,5,7,2,1, 3, 6, 8, 4, 4, 6, 7, 12, 6,7,12,9,8,7, 8, 9,5,3,8,4,2,5,7,2,1, 3, 6, 8, 4, 4, 6, 7, 12, 6,7,12,9,8,7, 8, 9,5,3,8,4,2,5,7,2,1, 3, 6, 8, 4, 4, 6, 7, 12, 6,7,12,9,8,7, 8, 9]))
+
+# print(najdaljse_narascajoce_podzaporedjee([2, 3, 6, 8, 4, 4, 6, 7, 12, 8, 9]))
+
 # -----------------------------------------------------------------------------
 # Rešitev sedaj popravite tako, da funkcija `vsa_najdaljsa` vrne seznam vseh
 # najdaljših naraščajočih podzaporedij.
@@ -43,7 +100,30 @@ from functools import lru_cache
 # dva.
 # =============================================================================
 
+def zabica(mocvara):
+    def skace(i, e_ost):
+        if i >= len(mocvara):
+            return 0
+        else:
+            energija = e_ost + mocvara[i]
+            navzdol = [skace(i + dolzina_skoka, energija - dolzina_skoka) for dolzina_skoka in range(1, energija + 1)]
+            return 1 + min(navzdol)
+    return skace(0,0)
+print(zabica([2, 4, 1, 2, 1, 3, 1, 1, 5]))
 
+def zaba(mocvara):
+    @lru_cache(maxsize=None)
+    def skace(energija, i):
+        dim = len(mocvara)
+        energija += mocvara[i]
+        if i + energija > dim:
+            return 1
+        else:
+            naslednji = [skace(energija - j, i+j) for j in range(1, energija)]
+            return 1 + min(naslednji)
+    return skace(mocvara[0], 0)
+    
+print(zaba([10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,10]))
 
 # =============================================================================
 # Nageljni
@@ -66,16 +146,27 @@ from functools import lru_cache
 #     [0, 1, 1, 0, 1, 1, 0, 1, 1]
 # =============================================================================
 
-@lru_cache(maxsize=None) 
-def nageljni_stevilo(n, m, l): 
-    if m <= 0: 
+@lru_cache(maxsize=None)
+def nageljni_stevilo(balkon, st_korit, l_korito):
+    if st_korit <= 0:
         return 1
-    elif n < l: 
-        return 0 
-    else: 
-        return nageljni_stevilo(n-1, m, l) + nageljni_stevilo(n-l-1, m-1, l)
+    elif balkon < l_korito:
+        return 0
+    else:
+        return nageljni_stevilo(balkon-1, st_korit, l_korito) + nageljni_stevilo(balkon-l_korito-1, st_korit-1, l_korito)
+
+#@lru_cache(maxsize=None)
+def nageljni_moznosti(balkon, st_korit, l_korito):
+    if st_korit <= 0:
+        return []
+    elif balkon < l_korito:
+        return []
+    else:
+        return [0] + nageljni_moznosti(balkon-1, st_korit, l_korito) + [1] + nageljni_moznosti(balkon-l_korito-1, st_korit-1, l_korito)
 
 
+# print(nageljni_stevilo(9,3,2))
+# print(nageljni_moznosti(9,3,2))
 
 # =============================================================================
 # Pobeg iz Finske
@@ -119,8 +210,18 @@ def nageljni_stevilo(n, m, l):
 # zapil). Funkcija `pobeg` sprejme seznam, ki predstavlja finska mesta in vrne
 # seznam indeksov mest, v katerih se Mortimer ustavi.
 # =============================================================================
+# return je oblike [[1,2,3], denar]
+def pobeg1(mesta1):
+    def pobeg2(mesta, denar, skok, trenutno):
+        if trenutno >= len(mesta):
+            return []
+        else:
+            for cilj in mesta[trenutno]:
+                return [[[cilj[0]] + pobeg2(mesta, cilj[1] + denar, skok+1, cilj[0])] for cilj in mesta[trenutno] if denar >=0]
+    pobeg2(mesta1,0,0,0)
+    
 
-
+pobeg1([[(1, 10), (3, -10)],[(2, 10),(5, -20)],[(3, -10)],[(4, 15)],[(5, 0)]])
 
 # =============================================================================
 # Pričetek robotske vstaje

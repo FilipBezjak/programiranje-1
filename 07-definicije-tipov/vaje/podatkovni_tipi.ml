@@ -172,7 +172,7 @@ type status =
        | Student of magic * float
        | Employed of magic * specialisation
 
-       type wizard = {name: string; status: status}
+type wizard = {name: string; status: status}
 
 let jaz = {name = "Filip"; status= Student(Fire, 25.)}
 

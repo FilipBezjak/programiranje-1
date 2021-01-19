@@ -19,15 +19,15 @@
 let test_matrix = 
   [| [| 1 ; 2 ; 0 |];
      [| 2 ; 4 ; 5 |];
-     [| 7 ; 0 ; 1 |] |]
+     [| 7 ; 0 ; 1 |] |] 
 
 let max_chesse chesse_matrix=
   let dimx = Array.length chesse_matrix.(0) in
   let dimy = Array.length chesse_matrix in 
   let rec najboljsa x y=
     let teza = chesse_matrix.(y).(x) in
-    let desno x y = if x + 1 >= dimx then 0 else najboljsa (x+1) y in
-    let dol x y = if y + 1 >= dimy then 0 else najboljsa x (y+1) in
+    let desno x y = if x + 1 = dimx then 0 else najboljsa (x+1) y in
+    let dol x y = if y + 1 = dimy then 0 else najboljsa x (y+1) in
     teza + max (dol x y) (desno x y ) in
   najboljsa 0 0
 
@@ -45,8 +45,26 @@ let max_chesse chesse_matrix=
  # optimal_path test_matrix |> convert_path test_matrix;;
  - : int list = [1; 2; 4; 5; 1]
 [*----------------------------------------------------------------------------*)
-
 type mouse_direction = Down | Right
+
+
+let optimal_path chesse_matrix=
+  let dimx = Array.length chesse_matrix.(0) in
+  let dimy = Array.length chesse_matrix in 
+  let rec aux_najboljsa x y=
+    let teza = chesse_matrix.(y).(x) in
+    let desno, pot_desno = if x + 1 >= dimx then (0,[]) else aux_najboljsa (x+1) y in
+    let dol, pot_dol = if y + 1 >= dimy then (0,[]) else aux_najboljsa x (y+1) in
+    let najboljsa, pot =
+      if desno >= dol then
+        (teza + desno, Right::pot_desno)
+      else
+        (teza + dol, Down::pot_dol)
+      in
+    (najboljsa, pot)
+      in
+    aux_najboljsa 0 0
+
 
 
 (*----------------------------------------------------------------------------*]
@@ -64,6 +82,21 @@ type mouse_direction = Down | Right
  # alternating_towers 10;;
  - : int = 35
 [*----------------------------------------------------------------------------*)
+
+let alternating_towers n=
+  (*dodamo rdec stolp 1, 2 *)
+  let rec redtop height=
+    if height <= 0 then 0
+    else if  height <= 2 then 1
+    else bluetop (height - 1) + bluetop (height -2)
+    (*dodamo moder stolp 2,3*)
+  and bluetop height=
+    if height <= 1 then 0
+    else if  height = 2 then 1
+    else if  height = 3 then 2
+    else redtop (height - 2) + redtop (height - 3)
+    in
+  redtop n + bluetop n
 
 
 
@@ -87,6 +120,25 @@ type mouse_direction = Down | Right
      Blue (TopBlue (Blue3, TopRed (Red1, BlueBottom)));
      Blue (TopBlue (Blue2, TopRed (Red2, BlueBottom)))]
 [*----------------------------------------------------------------------------*)
+
+let alternating_towers n=
+  (*dodamo rdec stolp 1, 2 *)
+  let rec redtop height=
+    if height <= 0 then []
+    else if  height = 2 then TopRed(Red2, BlueBottom)
+    else if  height = 1 then TopRed(Red1, BlueBottom)
+        else [bluetop (height - 1) TopBlue(, Red1) + bluetop (height - 2) TopBlue(, Red1)]
+    (*dodamo moder stolp 2,3*)
+  and bluetop height=
+    if height <= 1 then 0
+    else if  height = 2 then 1
+    else if  height = 3 then 2
+    else redtop (height - 2) + redtop (height - 3)
+    in
+  redtop n + bluetop n
+
+
+let enumerate_towers height
 
 
 type blue_block = Blue3 | Blue2
